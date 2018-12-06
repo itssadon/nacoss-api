@@ -40,6 +40,7 @@ require 'src/routes.php';
 
 // Register the database connection with Eloquent
 $capsule = $app->getContainer()->get('capsule');
+$capsule->setAsGlobal();  // this is important
 $capsule->bootEloquent();
 
 // Run app
