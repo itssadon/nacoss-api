@@ -19,7 +19,7 @@ class ChapterController extends Controller {
     parent::__construct($container);
   }
 
-  public function addChapter(Request $request, Response $response, $args) {
+  public function addChapter(Request $request, Response $response) {
     $endpoint = $this->getPath($request);
     $params = $request->getParsedBody();
 
