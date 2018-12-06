@@ -87,9 +87,8 @@ class MemberController extends Controller {
     }
   }
 
-  public function getAllMembers(Request $request, Response $response, $args) {
+  public function getAllMembers(Request $request, Response $response) {
     $endpoint = $this->getPath($request);
-    $mrn = $args['mrn'];
     $skip = 0;
     $page_size = 25;
 
@@ -115,6 +114,27 @@ class MemberController extends Controller {
       }
 
       return $response->withJson(["members"=> $membersPayload], 200);
+    } catch (QueryException $dbException) {
+      $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
+      return $response->withJson($databaseErrorPayload, 500);
+    }
+  }
+
+  public function getMemberDetails(Request $request, Response $response, $args) {
+    $endpoint = $this->getPath($request);
+    $mrn = $args['mrn'];
+
+    try {
+      $memberDetails = Member::where('members.mrn', $mrn)
+        ->leftJoin('profiles', function($join) {
+          $join->on('members.mrn', '=', 'profiles.mrn');
+        })
+        ->leftJoin('users', function($join) {
+          $join->on('members.mrn', '=', 'users.mrn');
+        })
+        ->get();
+
+      return $response->withJson(["memberDetails"=> $memberDetails[0]], 200);
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
