@@ -23,6 +23,10 @@ $app->group('/v1', function () {
         require 'Routes/Members.php';
     });
 
+    $this->group('/transactions', function () {
+        require 'Routes/Transactions.php';
+    });
+
 });
 
 // Catch-all route to serve a 404 Not Found page if none of the routes match
