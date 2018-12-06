@@ -35,7 +35,7 @@ class ChapterController extends Controller {
       $chapter->chapter_name = strtoupper($params['chapter_name']);
       $chapter->zone_id = $params['zone_id'];
       $chapter->chapter_reg_num = UniqueIdHelper::generateChapterRegNum($params['school_alias']);
-      $chapter->chapter_email = $params['chapter_email'];
+      $chapter->chapter_email = strtolower($params['chapter_email']);
       $chapter->address = $params['address'];
       $chapter->save();
 
