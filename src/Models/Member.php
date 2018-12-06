@@ -8,7 +8,7 @@ class Member extends Model {
   protected $table = 'members';
   public $primaryKey = 'mrn';
   public $timestamp = false;
-  public $incrementing = true;
+  public $incrementing = false;
   protected $fillable = [
     'mrn',
     'school_alias',
@@ -16,6 +16,10 @@ class Member extends Model {
     'issued_cert',
     'is_genuine',
     'created_at'
+  ];
+  
+  protected $hidden = [
+    'password'
   ];
 
   public function getPayload() {
@@ -31,7 +35,7 @@ class Member extends Model {
 
   public function getFullPayload($member) {
     return [
-      'mrn'=> $member->mrn,
+      'mrn'=> (string) $member->mrn,
       'surname'=> $member->surname,
       'firstName'=> $member->firstname,
       'otherName'=> $member->othername,
