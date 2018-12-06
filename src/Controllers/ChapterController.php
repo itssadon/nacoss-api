@@ -171,7 +171,7 @@ class ChapterController extends Controller {
 
       $chapterPayload = $chapter->fresh()->getPayload();
 
-      return $response->withJson(["chapter"=> $chapterPayload, 'message'=> 'Your chapter registration has been logged. Proceed to payment now.'], 200);
+      return $response->withJson(['status'=> true, 'message'=> 'Your chapter registration has been logged. Proceed to payment now.', "chapter"=> $chapterPayload], 200);
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
