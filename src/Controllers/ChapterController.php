@@ -60,6 +60,50 @@ class ChapterController extends Controller {
     }
   }
 
+  public function updateChapterRegistration(Request $request, Response $response) {
+    $endpoint = $rhis->getPath($request);
+    $params = $request->getParsedBody();
+
+    if ($this->hasMissingRequiredParams($params)) {
+      $parametersErrorPayload = $this->getParametersErrorPayload($endpoint);
+      return $response->withJson($parametersErrorPayload, 401);
+    }
+
+    $chapterExists = Chapter::where('chapter_name', $params['chapter_name'])->exists();
+    if ($chapterExists) {
+      return $response->withJson(['status'=> false, 'message'=> 'Chapter already exists!'], 200);
+    }
+
+    $chapterRegExists = ChapterRegistration::where(['chapter_name'=> $params['chapter_name'], 'traasaction_ref'=> $params['transaction_ref']])->exists();
+    if (!$chapterRegExists) {
+      return $response->withJson(['status'=> false, 'message'=> 'Chapter registration has not been logged.'], 200);
+    }
+
+    $chapterPaymentExists = Transaction::where(['transaction_ref'=> $params['transaction_ref'], 'response_code'=> '00'])->exists();
+    if (!$chapterPaymentExists) {
+      return $response->withJson(['status'=> false, 'message'=> 'Chapter to be registered has not paid required registration fee.'], 200);
+    }
+
+    try {
+      $chapter = new Chapter();
+      $chapter->school_name = ucwords($params['school_name']);
+      $chapter->school_alias = $params['school_alias'];
+      $chapter->chapter_name = strtoupper($params['chapter_name']);
+      $chapter->zone_id = $params['zone_id'];
+      $chapter->chapter_reg_num = UniqueIdHelper::generateChapterRegNum($params['school_alias']);
+      $chapter->chapter_email = strtolower($params['chapter_email']);
+      $chapter->address = $params['address'];
+      $chapter->save();
+
+      $chapterPayload = $chapter->fresh()->getPayload();
+
+      return $response->withJson(['status'=> true, 'message'=> 'Your chapter registration has been logged. Proceed to payment now.', "chapter"=> $chapterPayload], 200);
+    } catch (QueryException $dbException) {
+      $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
+      return $response->withJson($databaseErrorPayload, 500);
+    }
+  }
+
   public function getAllChapters(Request $request, Response $response) {
     $endpoint = $this->getPath($request);
 
@@ -128,50 +172,6 @@ class ChapterController extends Controller {
       $chapterDues = ChapterDue::updteOrCreate($params);
 
       return $response->withJson(["status"=> true, 'message'=> 'Your chapter activation was successful'], 200);
-    } catch (QueryException $dbException) {
-      $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
-      return $response->withJson($databaseErrorPayload, 500);
-    }
-  }
-
-  public function updateChapterRegistration(Request $request, Response $response) {
-    $endpoint = $rhis->getPath($request);
-    $params = $request->getParsedBody();
-
-    if ($this->hasMissingRequiredParams($params)) {
-      $parametersErrorPayload = $this->getParametersErrorPayload($endpoint);
-      return $response->withJson($parametersErrorPayload, 401);
-    }
-
-    $chapterExists = Chapter::where('chapter_name', $params['chapter_name'])->exists();
-    if ($chapterExists) {
-      return $response->withJson(['status'=> false, 'message'=> 'Chapter already exists!'], 200);
-    }
-
-    $chapterRegExists = ChapterRegistration::where(['chapter_name'=> $params['chapter_name'], 'traasaction_ref'=> $params['transaction_ref']])->exists();
-    if (!$chapterRegExists) {
-      return $response->withJson(['status'=> false, 'message'=> 'Chapter registration has not been logged.'], 200);
-    }
-
-    $chapterPaymentExists = Transaction::where(['transaction_ref'=> $params['transaction_ref'], 'response_code'=> '00'])->exists();
-    if (!$chapterPaymentExists) {
-      return $response->withJson(['status'=> false, 'message'=> 'Chapter to be registered has not paid required registration fee.'], 200);
-    }
-
-    try {
-      $chapter = new Chapter();
-      $chapter->school_name = ucwords($params['school_name']);
-      $chapter->school_alias = $params['school_alias'];
-      $chapter->chapter_name = strtoupper($params['chapter_name']);
-      $chapter->zone_id = $params['zone_id'];
-      $chapter->chapter_reg_num = UniqueIdHelper::generateChapterRegNum($params['school_alias']);
-      $chapter->chapter_email = strtolower($params['chapter_email']);
-      $chapter->address = $params['address'];
-      $chapter->save();
-
-      $chapterPayload = $chapter->fresh()->getPayload();
-
-      return $response->withJson(['status'=> true, 'message'=> 'Your chapter registration has been logged. Proceed to payment now.', "chapter"=> $chapterPayload], 200);
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
