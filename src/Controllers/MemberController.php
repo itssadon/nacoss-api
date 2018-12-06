@@ -9,7 +9,6 @@ use NACOSS\Models\Member;
 use NACOSS\Models\Profile;
 use NACOSS\Models\User;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Hash;
 use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -57,6 +56,7 @@ class MemberController extends Controller {
 
       $profile = new Profile();
       $profile->mrn = $member->mrn;
+      $profile->surname = $params['surname'];
       $profile->firstname = $params['firstname'];
       $profile->othername = $params['othername'] || '';
       $profile->gender_id = $params['gender_id'];
@@ -66,8 +66,8 @@ class MemberController extends Controller {
 
       $user = new User;
       $user->mrn = $member->mrn;
-      $user->email = $params['email'];
-      $user->password  = Hash::make($params['password']);
+      $user->email = strtolower($params['email']);
+      $user->password  = password_hash($params['password'], PASSWORD_BCRYPT, ['cost'=> 10]);
       $user->save();
 
       $member = $member->fresh()->getPayload();
@@ -75,12 +75,12 @@ class MemberController extends Controller {
       $user = $user->fresh()->getPayload();
 
       $memberPayload = [
-        $member,
-        $profile,
-        $user
+        'member'=> $member,
+        'profile'=> $profile,
+        'user'=> $user
       ];
 
-      return $response->withJson(['status'=> true, 'message'=> 'Your membership registration was successful', "member"=> $memberPayload], 200);
+      return $response->withJson(['status'=> true, 'message'=> 'Your membership registration was successful', "memberDetails"=> $memberPayload], 200);
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);

@@ -1,6 +1,7 @@
 <?php
 namespace NACOSS\Helpers;
 
+use NACOSS\Helpers\UniqueIdHelper;
 use NACOSS\Models\Member;
 
 class UniqueIdHelper {
@@ -25,14 +26,13 @@ class UniqueIdHelper {
   public function generateNacossId() {
     $year = substr(date('Y'), 2, 2);
     $nacoss_id = $year.substr(str_shuffle('0123456780ABCDEFGHJKMNPQRSTUVWXYZ'), 0, 8).'NA';
-    $this->nacoss_id = $nacoss_id;
-    while ($this->dataExists($nacoss_id)) {
-        $this->nacoss_id = $year.substr(str_shuffle('0123456780ABCDEFGHJKMNPQRSTUVWXYZ'), 0, 8).'NA';
+    while (UniqueIdHelper::dataExists($nacoss_id)) {
+      $nacoss_id = $year.substr(str_shuffle('0123456780ABCDEFGHJKMNPQRSTUVWXYZ'), 0, 8).'NA';
     }
-    return $this->nacoss_id;
+    return $nacoss_id;
   }
 
-  protected function dataExists(string $data) {
+  public function dataExists(string $data) {
     return Member::where('mrn', $data)->exists();
   }
 

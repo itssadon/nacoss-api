@@ -14,8 +14,7 @@ class Member extends Model {
     'school_alias',
     'skills',
     'issued_cert',
-    'is_genuine',
-    'created_at'
+    'is_genuine'
   ];
   
   protected $hidden = [
@@ -28,8 +27,7 @@ class Member extends Model {
       'schoolAlias' => $this->school_alias,
       'skills' => $this->skills,
       'issuedCert' => $this->issued_cert,
-      'isGenuine' => $this->is_genuine,
-      'createdAt' => $this->created_at
+      'isGenuine' => $this->is_genuine
     ];
   }
 

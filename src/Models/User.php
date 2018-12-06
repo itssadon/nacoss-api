@@ -6,14 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model {
   protected $table = 'users';
   public $primaryKey = 'mrn';
-  public $timestamp = false;
+  public $timestamp = true;
   public $incrementing = false;
   protected $fillable = [
     'mrn',
     'email',
     'password',
-    'user_role',
-    'created_at'
+    'user_role'
   ];
   protected $hidden = [
     'password'
@@ -22,8 +21,7 @@ class User extends Model {
   public function getPayload() {
     return [
       'email' => $this->email,
-      'userRole' => $this->user_role,
-      'createdAt' => $this->created_at
+      'userRole' => $this->user_role
     ];
   }
 }
