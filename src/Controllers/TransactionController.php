@@ -55,4 +55,22 @@ class TransactionController extends Controller {
     }
   }
 
+  public function getAllTransactions(Request $request, Response $response) {
+    $endpoint = $this->getPath($request);
+
+    try {
+      $transactions = Transaction::orderBy('created_at', DESC)->get();
+
+      $trasactionPayload = [];
+      foreach ($transactions as $chapter) {
+        array_push($trasactionPayload, $chapter->getPayload());
+      }
+
+      return $response->withJson(["transactions"=> $trasactionPayload], 200);
+    } catch (QueryException $dbException) {
+      $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
+      return $response->withJson($databaseErrorPayload, 500);
+    }
+  }
+
 }
