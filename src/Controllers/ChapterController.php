@@ -102,18 +102,15 @@ class ChapterController extends Controller {
       return $response->withJson($parametersErrorPayload, 401);
     }
 
+    $chapterExists = Chapter::where('chapter_name', $params['chapter_name'])->exists();
+    if (!$chapterExists) {
+      return $response->withJson(['status'=> false, 'message'=> 'Chapter to be activated was not found!'], 200);
+    }
+
     try {
-      $chapterDues = Chapter::updteOrCreate($params);
-      
-      $chapter = Chapter::leftJoin('chapter_dues', function($join) {
-        $join->on('chapters.chapter_name', '=', 'chapter_dues.chapter_name');
-      })
-      ->where('chapter.chapter_name', $params['chapter_name'])
-      ->get();
+      $chapterDues = ChapterDue::updteOrCreate($params);
 
-      $chapterPayload = $chapter->fresh()->getPayload();
-
-      return $response->withJson(["chapter"=> $chapterPayload, 'message'=> 'Your chapter dues payment was successful'], 200);
+      return $response->withJson(["status"=> true, 'message'=> 'Your chapter dues payment was successful'], 200);
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
