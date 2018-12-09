@@ -58,7 +58,7 @@ class MemberController extends Controller {
       $profile->mrn = $member->mrn;
       $profile->surname = $params['surname'];
       $profile->firstname = $params['firstname'];
-      $profile->othername = $params['othername'] || '';
+      $profile->othername = ($params['othername']) ? $params['othername'] : null;
       $profile->gender_id = $params['gender_id'];
       $profile->phone = $params['phone'];
       $profile->date_of_birth = $params['date_of_birth'];
