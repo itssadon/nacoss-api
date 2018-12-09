@@ -1,10 +1,12 @@
 <?php
 
 use Awurth\SlimValidation\Validator;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Capsule\Manager;
 use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
 use Monolog\Handler\StreamHandler;
+use NACOSS\Exceptions\Handler;
 
 // DIC configuration
 $container = $app->getContainer();
@@ -28,14 +30,21 @@ $container['logger'] = function ($c) {
 $container['capsule'] = function ($container) {
     $capsule = new Manager;
     $capsule->addConnection($container['settings']['db']);
-
     $capsule->setAsGlobal();
     $capsule->bootEloquent();
-
+    $capsule->getContainer()->singleton(
+        ExceptionHandler::class,
+        Handler::class
+    );
     return $capsule;
 };
 
 // validator
 $container['validator'] = function () {
 	return new Validator(false);
+};
+
+// copyright year
+$container['copyrightYear'] = function () {
+    return date('Y');
 };
