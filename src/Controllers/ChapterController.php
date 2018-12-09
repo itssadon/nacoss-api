@@ -141,7 +141,7 @@ class ChapterController extends Controller {
           $join->on('chapters.chapter_name', '=', 'chapter_dues.chapter_name');
         })
         ->whereNotNull('chapter_dues.transaction_ref')
-        ->orderBy('chapter_dues.created_at', DESC)
+        ->orderBy('chapters.school_name', ASC)
         ->get();
 
       $chaptersPayload = [];
