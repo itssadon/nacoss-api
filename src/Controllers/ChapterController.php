@@ -133,16 +133,21 @@ class ChapterController extends Controller {
     $endpoint = $this->getPath($request);
     $searchTerm = $args['search-term'];
 
+    if (is_null($searchTerm) || $searchTerm === '') {
+      return $response->withJson(["chapters"=> []], 200);
+    }
+
     try {
       $chapters = Chapter::where('chapters.chapter_name', 'LIKE', "%{$searchTerm}%")
         ->orWhere('chapters.school_alias', 'LIKE', "%{$searchTerm}%")
         ->orWhere('chapters.school_name', 'LIKE', "%{$searchTerm}%")
-        ->leftJoin('chapter_dues', function($join) {
-          $join->on('chapters.chapter_name', '=', 'chapter_dues.chapter_name');
+        ->leftJoin('zones', function($join) {
+          $join->on('chapters.zone_id', '=', 'zones.zone_id');
         })
-        ->whereNotNull('chapter_dues.transaction_ref')
         ->orderBy('chapters.school_name', ASC)
         ->get();
+
+      return $response->withJson(["chapters"=> $chapters], 200);
 
       $chaptersPayload = [];
       foreach ($chapters as $chapter) {

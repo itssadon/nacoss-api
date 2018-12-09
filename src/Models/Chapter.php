@@ -20,17 +20,15 @@ class Chapter extends Model {
     'logo'
   ];
 
-  public function getPayload() {
+  public function getPayload($chapter) {
     return [
-      'schoolAlias' => $this->school_alias,
-      'schoolName' => $this->school_name,
-      'chapterName' => $this->chapter_name,
-      'zoneId' => $this->zone_id,
-      'chapterRegistrationNumber' => $this->chapter_reg_num,
-      'chapterEmail' => $this->chapter_email,
-      'address' => $this->address,
-      'slogan' => $this->slogan,
-      'logo' => $this->logo
+      'schoolAlias' => $chapter->school_alias,
+      'schoolName' => $chapter->school_name,
+      'chapterName' => $chapter->chapter_name,
+      'chapterRegistrationNumber' => $chapter->chapter_reg_num,
+      'zone' => $chapter->zone_name,
+      'chapterEmail' => $chapter->chapter_email,
+      'address' => $chapter->address
     ];
   }
 }
