@@ -21,7 +21,7 @@ class ChapterController extends Controller {
 
   public function addChapter(Request $request, Response $response) {
     $endpoint = $this->getPath($request);
-    
+
     $this->requiredParams = [
       'transaction_ref',
       'chapter_email',
@@ -123,6 +123,38 @@ class ChapterController extends Controller {
       }
 
       return $response->withJson(["chapters"=> $chapterPayload], 200);
+    } catch (QueryException $dbException) {
+      $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
+      return $response->withJson($databaseErrorPayload, 500);
+    }
+  }
+
+  public function searchChapter(Request $request, Response $response, $args) {
+    $endpoint = $this->getPath($request);
+    $searchTerm = $args['search-term'];
+
+    if (is_null($searchTerm) || $searchTerm === '') {
+      return $response->withJson(["chapters"=> []], 200);
+    }
+
+    try {
+      $chapters = Chapter::where('chapters.chapter_name', 'LIKE', "%{$searchTerm}%")
+        ->orWhere('chapters.school_alias', 'LIKE', "%{$searchTerm}%")
+        ->orWhere('chapters.school_name', 'LIKE', "%{$searchTerm}%")
+        ->leftJoin('zones', function($join) {
+          $join->on('chapters.zone_id', '=', 'zones.zone_id');
+        })
+        ->orderBy('chapters.school_name', ASC)
+        ->get();
+
+      return $response->withJson(["chapters"=> $chapters], 200);
+
+      $chaptersPayload = [];
+      foreach ($chapters as $chapter) {
+        array_push($chaptersPayload, $chapter->getPayload());
+      }
+
+      return $response->withJson(["chapters"=> $chaptersPayload], 200);
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
