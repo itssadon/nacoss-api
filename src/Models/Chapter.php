@@ -9,7 +9,15 @@ class Chapter extends Model {
   public $timestamp = true;
   public $incrementing = false;
   protected $fillable = [
-    'school_alias', 'school_name', 'chapter_name', 'zone_id', 'chapter_reg_num', 'chapter_email', 'address', 'slogan', 'logo'
+    'school_alias',
+    'school_name',
+    'chapter_name',
+    'zone_id',
+    'chapter_reg_num',
+    'chapter_email',
+    'address',
+    'slogan',
+    'logo'
   ];
 
   public function getPayload() {
