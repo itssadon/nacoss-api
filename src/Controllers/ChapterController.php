@@ -21,7 +21,7 @@ class ChapterController extends Controller {
 
   public function addChapter(Request $request, Response $response) {
     $endpoint = $this->getPath($request);
-    
+
     $this->requiredParams = [
       'transaction_ref',
       'chapter_email',
@@ -123,6 +123,33 @@ class ChapterController extends Controller {
       }
 
       return $response->withJson(["chapters"=> $chapterPayload], 200);
+    } catch (QueryException $dbException) {
+      $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
+      return $response->withJson($databaseErrorPayload, 500);
+    }
+  }
+
+  public function searchChapter(Request $request, Response $response, $args) {
+    $endpoint = $this->getPath($request);
+    $searchTerm = $args['search-term'];
+
+    try {
+      $chapters = Chapter::where('chapters.chapter_name', 'LIKE', "%{$searchTerm}%")
+        ->orWhere('chapters.school_alias', 'LIKE', "%{$searchTerm}%")
+        ->orWhere('chapters.school_name', 'LIKE', "%{$searchTerm}%")
+        ->leftJoin('chapter_dues', function($join) {
+          $join->on('chapters.chapter_name', '=', 'chapter_dues.chapter_name');
+        })
+        ->whereNotNull('chapter_dues.transaction_ref')
+        ->orderBy('chapter_dues.created_at', DESC)
+        ->get();
+
+      $chaptersPayload = [];
+      foreach ($chapters as $chapter) {
+        array_push($chaptersPayload, $chapter->getPayload());
+      }
+
+      return $response->withJson(["chapters"=> $chaptersPayload], 200);
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
