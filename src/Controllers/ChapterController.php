@@ -43,7 +43,7 @@ class ChapterController extends Controller {
       $transaction = new Transaction();
       $transaction->transaction_ref = $params['transaction_ref'];
       $transaction->email = $params['chapter_email'];
-      $transaction->amount = 20000;
+      $transaction->amount = $params['amount'];
       $transaction->save();
 
       $chapterRegistration = new ChapterRegistration($params);
@@ -136,7 +136,11 @@ class ChapterController extends Controller {
 
     try {
       if (is_null($searchTerm) || $searchTerm === '') {
-        $chapters = Chapter::orderBy('school_name', ASC)->get();
+        $chapters = Chapter::leftJoin('zones', function($join) {
+            $join->on('chapters.zone_id', '=', 'zones.zone_id');
+          })
+          ->orderBy('chapters.school_name', ASC)
+          ->get();
       } else {
         $chapters = Chapter::where('chapters.chapter_name', 'LIKE', "%{$searchTerm}%")
           ->orWhere('chapters.school_alias', 'LIKE', "%{$searchTerm}%")
