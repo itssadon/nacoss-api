@@ -65,6 +65,8 @@ class ChapterController extends Controller {
       'zone_id',
       'chapter_email',
       'address',
+      'hod_name',
+      'hod_phone',
       'transaction_ref'
     ];
     $params = $request->getParsedBody();
@@ -98,6 +100,8 @@ class ChapterController extends Controller {
       $chapter->chapter_reg_num = UniqueIdHelper::generateChapterRegNum($params['school_alias']);
       $chapter->chapter_email = strtolower($params['chapter_email']);
       $chapter->address = $params['address'];
+      $chapter->hod_name = $params['hod_name'];
+      $chapter->hod_phone = $params['hod_phone'];
       $chapter->slogan = ($params['chapter_slogan']) ? $params['chapter_slogan'] : null;
       $chapter->logo = ($params['chapter_logo_url']) ? $params['chapter_logo_url'] : null;
       $chapter->save();
