@@ -16,6 +16,8 @@ class Chapter extends Model {
     'chapter_reg_num',
     'chapter_email',
     'address',
+    'hod_name',
+    'hod_phone',
     'slogan',
     'logo'
   ];
@@ -28,7 +30,9 @@ class Chapter extends Model {
       'chapterRegistrationNumber' => $chapter->chapter_reg_num,
       'zone' => $chapter->zone_name,
       'chapterEmail' => $chapter->chapter_email,
-      'address' => $chapter->address
+      'address' => $chapter->address,
+      'hodName' => $chapter->hod_name,
+      'hodPhone' => $chapter->hod_phone
     ];
   }
 }

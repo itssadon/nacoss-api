@@ -192,7 +192,7 @@ class ChapterController extends Controller {
   }
 
   public function updateChapterDue(Request $request, Response $response) {
-    $endpoint = $rhis->getPath($request);
+    $endpoint = $this->getPath($request);
     $this->requiredParams = [
       'chapter_name',
       'transaction_ref'

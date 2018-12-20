@@ -18,7 +18,8 @@ class TransactionController extends Controller {
     'email',
     'transaction_ref',
     'response_code',
-    'response_message'
+    'response_message',
+    'purpose_id'
   ];
 
   public function __construct(Container $container) {
@@ -40,6 +41,7 @@ class TransactionController extends Controller {
       $transaction->phone = ($params['phone']) ? $params['phone'] : null;
       $transaction->response_code = $params['response_code'];
       $transaction->response_message = $params['response_message'];
+      $transaction->purpose_id = $params['purpose'];
       $transaction->save();
 
       $transactionPayload = $transaction->fresh()->getPayload();
