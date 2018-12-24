@@ -81,6 +81,31 @@ class MemberController extends Controller {
       $user->password  = password_hash($params['password'], PASSWORD_BCRYPT, ['cost'=> 10]);
       $user->save();
 
+      $messageType = "welcome_email";
+			$vars = [
+				'surname' => $profile->surname,
+				'firstname' => $profile->firstname,
+				'mrn' => $user->mrn,
+				'email' => $user->email,
+				'copyright_year' => $this->getCopyrightYear()
+			];
+
+			try {
+				$messageTemplate = $this->getMessageTemplate($messageType);
+
+				if (empty($messageTemplate)) {
+					$templateNotFoundPayLoad = $this->getTemplateNotFoundPayload($endpoint);
+					return $response->withJson($templateNotFoundPayLoad, 500);
+				}
+
+				$subject = str_replace('[{FNAME}]', $profile->firstname.' '.$profile->surname, $messageTemplate->subject);
+				$message = new MessageController($messageTemplate->body, $vars);
+
+			} catch (QueryException $dbException) {
+				$databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
+				return $response->withJson($databaseErrorPayload, 500);
+			}
+
       $member = $member->fresh()->getPayload();
       $profile = $profile->fresh()->getPayload();
       $user = $user->fresh()->getPayload();
@@ -152,11 +177,13 @@ class MemberController extends Controller {
 
   private function getRulesForSignUp() {
 		return [
-			'first-name' => Rule::stringType()->length(1, null),
-			'last-name' => Rule::stringType()->length(1, null),
+			'school_alias' => Rule::stringType()->length(1, null),
+			'surname' => Rule::stringType()->length(1, null),
+			'firstname' => Rule::stringType()->length(1, null),
 			'email' => Rule::email(),
 			'password' => Rule::stringType()->length(6, null),
-			'phone-number' => Rule::stringType()->length(11, 11),
+      'phone' => Rule::stringType()->length(11, 11),
+      'gender_id' => Rule::stringType()->lenght(1, 1)
 		];
 	}
 
