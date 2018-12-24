@@ -47,13 +47,6 @@ class Controller {
 		$code = 401;
 		$developerMessage = 'Some required parameters are missing';
 		$message = 'Invalid parameters';
-
-		switch ($endpoint) {
-		case '/movie':
-			$message = 'Invalid parameters';
-            break;
-        
-        }
             
 		return ResponsePayload::getPayload($code, $message, $endpoint, $developerMessage);
 	}
@@ -71,7 +64,8 @@ class Controller {
 			[
 				'length' => 'This field must have a length between {{minValue}} and {{maxValue}} characters',
 				'positive' => 'This field must be positive',
-			]);
+			]
+		);
 	}
 
 	protected function getPath(Request $request) {
