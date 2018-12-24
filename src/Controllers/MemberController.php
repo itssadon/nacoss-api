@@ -176,6 +176,11 @@ class MemberController extends Controller {
     }
   }
 
+  public function updateMemberDetails(Request $request, Response $response, $args) {
+    $endpoint = $this->getPath($request);
+    $mrn = $args['mrn'];
+  }
+
   private function getRulesForSignUp() {
 		return [
 			'school_alias' => Rule::stringType()->length(1, null),
