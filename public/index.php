@@ -1,7 +1,7 @@
 <?php
 
 use \Slim\App;
-//use \Dotenv\Dotenv;
+use \Dotenv\Dotenv;
 
 date_default_timezone_set('Africa/Lagos');
 
@@ -22,8 +22,8 @@ require 'vendor/autoload.php';
 
 session_start();
 
-//$dotenv = new Dotenv(__DIR__);
-//$dotenv->load();
+$dotenv = new Dotenv(__DIR__);
+$dotenv->load();
 
 // Instantiate the app
 $settings = require 'src/settings.php';

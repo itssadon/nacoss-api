@@ -2,6 +2,7 @@
 namespace NACOSS\Controllers;
 
 use NACOSS\Helpers\ResponsePayload;
+use NACOSS\Models\MessageTemplate;
 use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -46,13 +47,6 @@ class Controller {
 		$code = 401;
 		$developerMessage = 'Some required parameters are missing';
 		$message = 'Invalid parameters';
-
-		switch ($endpoint) {
-		case '/movie':
-			$message = 'Invalid parameters';
-            break;
-        
-        }
             
 		return ResponsePayload::getPayload($code, $message, $endpoint, $developerMessage);
 	}
@@ -70,10 +64,31 @@ class Controller {
 			[
 				'length' => 'This field must have a length between {{minValue}} and {{maxValue}} characters',
 				'positive' => 'This field must be positive',
-			]);
+			]
+		);
 	}
 
 	protected function getPath(Request $request) {
 		return str_replace('/v1', '', $request->getUri()->getPath());
 	}
+
+	protected function getMessageTemplate($id) {
+		$messageTemplate = MessageTemplate::select("subject", "body")->where(["id" => $id])->first();
+
+		return $messageTemplate;
+	}
+
+	protected function getTemplateNotFoundPayload($link) {
+		$code = 500;
+		$link = $link;
+		$message = 'Template not found';
+		$developerMessage = 'We could not find any template with the id provided';
+
+		return ResponsePayload::getPayload($code, $message, $link, $developerMessage);
+	}
+
+	protected function getCopyrightYear() {
+		return $this->container->copyrightYear;
+	}
+
 }

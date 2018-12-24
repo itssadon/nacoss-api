@@ -9,6 +9,7 @@ use NACOSS\Models\Member;
 use NACOSS\Models\Profile;
 use NACOSS\Models\User;
 use Illuminate\Database\QueryException;
+use Respect\Validation\Validator as Rule;
 use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -38,14 +39,24 @@ class MemberController extends Controller {
       return $response->withJson($parametersErrorPayload, 401);
     }
 
+    $signUpRules = $this->getRulesForSignUp();
+
+		$validator = $this->getValidator($request, $signUpRules);
+		if (!$validator->isValid()) {
+			$customErrorPayload = $this->getCustomErrorPayload($endpoint, 'Invalid parameter(s).', 422, 'Some parameters provided are invalid.');
+			return $response->withJson($customErrorPayload, $customErrorPayload['code']);
+		}
+
     $userExists = User::where('email', $params['email'])->exists();
     if ($userExists) {
-      return $response->withJson(['status'=> false, 'message'=> 'User with email already exists!'], 200);
+      $customErrorPayload = $this->getCustomErrorPayload($endpoint, 'Member exists.', 422, 'Member with email address already exists!');
+			return $response->withJson($customErrorPayload, $customErrorPayload['code']);
     }
 
     $phoneExists = Profile::where('phone', $params['phone'])->exists();
     if ($phoneExists) {
-      return $response->withJson(['status'=> false, 'message'=> 'User with phone number already exists!'], 200);
+      $customErrorPayload = $this->getCustomErrorPayload($endpoint, 'Member exists.', 422, 'Member with phone number already exists!');
+			return $response->withJson($customErrorPayload, $customErrorPayload['code']);
     }
 
     try {
@@ -58,7 +69,7 @@ class MemberController extends Controller {
       $profile->mrn = $member->mrn;
       $profile->surname = $params['surname'];
       $profile->firstname = $params['firstname'];
-      $profile->othername = ($params['othername']) ? $params['othername'] : null;
+      $profile->othername = ($params['othername']) ? $params['othername'] : '';
       $profile->gender_id = $params['gender_id'];
       $profile->phone = $params['phone'];
       $profile->date_of_birth = $params['date_of_birth'];
@@ -70,14 +81,38 @@ class MemberController extends Controller {
       $user->password  = password_hash($params['password'], PASSWORD_BCRYPT, ['cost'=> 10]);
       $user->save();
 
+      $messageType = "welcome_email";
+			$vars = [
+				'surname' => $profile->surname,
+				'firstname' => $profile->firstname,
+				'mrn' => $user->mrn,
+        'email' => $user->email,
+        'password' => $params['password'],
+				'copyright_year' => $this->getCopyrightYear()
+			];
+
+			try {
+				$messageTemplate = $this->getMessageTemplate($messageType);
+
+				if (empty($messageTemplate)) {
+					$templateNotFoundPayLoad = $this->getTemplateNotFoundPayload($endpoint);
+					return $response->withJson($templateNotFoundPayLoad, 500);
+				}
+
+				$subject = str_replace('[{FNAME}]', $profile->firstname, $messageTemplate->subject);
+				$message = new MessageController($messageTemplate->body, $vars);
+
+			} catch (QueryException $dbException) {
+				$databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
+				return $response->withJson($databaseErrorPayload, 500);
+			}
+
       $member = $member->fresh()->getPayload();
       $profile = $profile->fresh()->getPayload();
       $user = $user->fresh()->getPayload();
 
       $memberPayload = [
-        'member'=> $member,
-        'profile'=> $profile,
-        'user'=> $user
+        'member'=> $member
       ];
 
       return $response->withJson(['status'=> true, 'message'=> 'Your membership registration was successful', "memberDetails"=> $memberPayload], 200);
@@ -140,5 +175,17 @@ class MemberController extends Controller {
       return $response->withJson($databaseErrorPayload, 500);
     }
   }
+
+  private function getRulesForSignUp() {
+		return [
+			'school_alias' => Rule::stringType()->length(1, null),
+			'surname' => Rule::stringType()->length(1, null),
+			'firstname' => Rule::stringType()->length(1, null),
+			'email' => Rule::email(),
+			'password' => Rule::stringType()->length(6, null),
+      'phone' => Rule::stringType()->length(11, 11),
+      'gender_id' => Rule::stringType()->lenght(1, 1)
+		];
+	}
 
 }
