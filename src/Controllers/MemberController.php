@@ -39,14 +39,24 @@ class MemberController extends Controller {
       return $response->withJson($parametersErrorPayload, 401);
     }
 
+    $signUpRules = $this->getRulesForSignUp();
+
+		$validator = $this->getValidator($request, $signUpRules);
+		if (!$validator->isValid()) {
+			$customErrorPayload = $this->getCustomErrorPayload($endpoint, 'Invalid parameter(s).', 422, 'Some parameters provided are invalid.');
+			return $response->withJson($customErrorPayload, $customErrorPayload['code']);
+		}
+
     $userExists = User::where('email', $params['email'])->exists();
     if ($userExists) {
-      return $response->withJson(['status'=> false, 'message'=> 'User with email already exists!'], 200);
+      $customErrorPayload = $this->getCustomErrorPayload($endpoint, 'Member exists.', 422, 'Member with email address already exists!');
+			return $response->withJson($customErrorPayload, $customErrorPayload['code']);
     }
 
     $phoneExists = Profile::where('phone', $params['phone'])->exists();
     if ($phoneExists) {
-      return $response->withJson(['status'=> false, 'message'=> 'User with phone number already exists!'], 200);
+      $customErrorPayload = $this->getCustomErrorPayload($endpoint, 'Member exists.', 422, 'Member with phone number already exists!');
+			return $response->withJson($customErrorPayload, $customErrorPayload['code']);
     }
 
     try {
