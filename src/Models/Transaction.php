@@ -13,7 +13,8 @@ class Transaction extends Model {
     'transaction_ref',
     'amount',
     'response_code',
-    'response_message'
+    'response_message',
+    'purpose_id'
   ];
 
   public function getPayload() {

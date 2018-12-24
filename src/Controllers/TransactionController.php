@@ -8,6 +8,7 @@ use NACOSS\Models\ChapterDue;
 use NACOSS\Models\ChapterRegistration;
 use NACOSS\Models\Member;
 use NACOSS\Models\Transaction;
+use NACOSS\Models\TransactionPurpose;
 use Illuminate\Database\QueryException;
 use Slim\Container;
 use Slim\Http\Request;
@@ -18,7 +19,8 @@ class TransactionController extends Controller {
     'email',
     'transaction_ref',
     'response_code',
-    'response_message'
+    'response_message',
+    'purpose_id'
   ];
 
   public function __construct(Container $container) {
@@ -37,9 +39,12 @@ class TransactionController extends Controller {
     try {
       $transaction = Transaction::firstOrNew(['transaction_ref'=> $params['transaction_ref']]);
       $transaction->email = strtolower($params['email']);
-      $transaction->phone = ($params['phone']) ? $params['phone'] : null;
+      $transaction->phone = ($params['phone']) ? $params['phone'] : '';
       $transaction->response_code = $params['response_code'];
       $transaction->response_message = $params['response_message'];
+      $transaction->purpose_id = $params['purpose_id'];
+      $txPurposeAmount = TransactionPurpose::select('amount')->where('purpose_id', $transaction->purpose_id)->first();
+      $transaction->amount = $txPurposeAmount['amount'];
       $transaction->save();
 
       $transactionPayload = $transaction->fresh()->getPayload();
