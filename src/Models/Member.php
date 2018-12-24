@@ -49,9 +49,7 @@ class Member extends Model {
       'schoolAlias'=> $member->school_alias,
       'skills'=> $member->skills,
       'issuedCert'=> $member->issued_cert,
-      'isGenuine'=> $member->is_genuine,
-      'createdAt'=> $member->created_at,
-      'updatedAt'=> $member->updated_at
+      'isGenuine'=> $member->is_genuine
     ];
   }
 
