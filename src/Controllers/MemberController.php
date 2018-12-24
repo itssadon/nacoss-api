@@ -9,6 +9,7 @@ use NACOSS\Models\Member;
 use NACOSS\Models\Profile;
 use NACOSS\Models\User;
 use Illuminate\Database\QueryException;
+use Respect\Validation\Validator as Rule;
 use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -58,7 +59,7 @@ class MemberController extends Controller {
       $profile->mrn = $member->mrn;
       $profile->surname = $params['surname'];
       $profile->firstname = $params['firstname'];
-      $profile->othername = ($params['othername']) ? $params['othername'] : null;
+      $profile->othername = ($params['othername']) ? $params['othername'] : '';
       $profile->gender_id = $params['gender_id'];
       $profile->phone = $params['phone'];
       $profile->date_of_birth = $params['date_of_birth'];
@@ -75,9 +76,7 @@ class MemberController extends Controller {
       $user = $user->fresh()->getPayload();
 
       $memberPayload = [
-        'member'=> $member,
-        'profile'=> $profile,
-        'user'=> $user
+        'member'=> $member
       ];
 
       return $response->withJson(['status'=> true, 'message'=> 'Your membership registration was successful', "memberDetails"=> $memberPayload], 200);
@@ -140,5 +139,15 @@ class MemberController extends Controller {
       return $response->withJson($databaseErrorPayload, 500);
     }
   }
+
+  private function getRulesForSignUp() {
+		return [
+			'first-name' => Rule::stringType()->length(1, null),
+			'last-name' => Rule::stringType()->length(1, null),
+			'email' => Rule::email(),
+			'password' => Rule::stringType()->length(6, null),
+			'phone-number' => Rule::stringType()->length(11, 11),
+		];
+	}
 
 }
