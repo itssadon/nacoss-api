@@ -86,7 +86,8 @@ class MemberController extends Controller {
 				'surname' => $profile->surname,
 				'firstname' => $profile->firstname,
 				'mrn' => $user->mrn,
-				'email' => $user->email,
+        'email' => $user->email,
+        'password' => $params['password'],
 				'copyright_year' => $this->getCopyrightYear()
 			];
 
@@ -98,7 +99,7 @@ class MemberController extends Controller {
 					return $response->withJson($templateNotFoundPayLoad, 500);
 				}
 
-				$subject = str_replace('[{FNAME}]', $profile->firstname.' '.$profile->surname, $messageTemplate->subject);
+				$subject = str_replace('[{FNAME}]', $profile->firstname, $messageTemplate->subject);
 				$message = new MessageController($messageTemplate->body, $vars);
 
 			} catch (QueryException $dbException) {
