@@ -43,6 +43,15 @@ class Controller {
 		return ResponsePayload::getPayload($code, $message, $link, $developerMessage);
 	}
 
+	protected function getCustomErrorPayload($link, $message, $code, $devMessage) {
+		$link = $link;
+		$message = $message;
+		$code = $code;
+		$developerMessage = $devMessage;
+
+		return ResponsePayload::getPayload($code, $message, $link, $developerMessage);
+	}
+
 	protected function getParametersErrorPayload($endpoint) {
 		$code = 401;
 		$developerMessage = 'Some required parameters are missing';
