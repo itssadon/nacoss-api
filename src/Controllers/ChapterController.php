@@ -215,7 +215,7 @@ class ChapterController extends Controller {
     }
 
     try {
-      $chapterDues = ChapterDue::updteOrCreate($params);
+      $chapterDues = ChapterDue::updateOrCreate(array('chapter_name'=> $params['chapter_name']), $params);
 
       return $response->withJson(["status"=> true, 'message'=> 'Your chapter activation was successful'], 200);
     } catch (QueryException $dbException) {
