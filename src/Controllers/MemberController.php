@@ -160,16 +160,19 @@ class MemberController extends Controller {
     $mrn = $args['mrn'];
 
     try {
-      $memberDetails = Member::where('members.mrn', $mrn)
+      $memberDetails = Member::select('members.mrn', 'members.school_alias', 'members.skills', 'members.issued_cert', 'members.is_genuine', 'profiles.surname', 'profiles.firstname', 'profiles.othername', 'profiles.gender_id', 'profiles.phone', 'profiles.date_of_birth', 'profiles.photo', 'profiles.twitter', 'profiles.facebook', 'profiles.linkedin', 'profiles.website', 'users.email')
+        ->where('members.mrn', $mrn)
         ->leftJoin('profiles', function($join) {
           $join->on('members.mrn', '=', 'profiles.mrn');
         })
         ->leftJoin('users', function($join) {
           $join->on('members.mrn', '=', 'users.mrn');
         })
-        ->get();
+        ->first();
 
-      return $response->withJson(["memberDetails"=> $memberDetails[0]], 200);
+      $memberPayload = Member::getFullPayload($memberDetails);
+
+      return $response->withJson(["memberDetails"=> $memberPayload], 200);
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);

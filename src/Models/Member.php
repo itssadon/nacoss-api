@@ -33,7 +33,7 @@ class Member extends Model {
 
   public function getFullPayload($member) {
     return [
-      'mrn'=> (string) $member->mrn,
+      'mrn'=> $member->mrn,
       'surname'=> $member->surname,
       'firstName'=> $member->firstname,
       'otherName'=> $member->othername,
@@ -42,11 +42,11 @@ class Member extends Model {
       'email'=> $member->email,
       'dateOfBirth'=> $member->date_of_birth,
       'photo'=> $member->photo,
+      'schoolAlias'=> $member->school_alias,
       'twitter'=> $member->twitter,
       'facebook'=> $member->facebook,
       'linkedin'=> $member->linkedin,
       'website'=> $member->website,
-      'schoolAlias'=> $member->school_alias,
       'skills'=> $member->skills,
       'issuedCert'=> $member->issued_cert,
       'isGenuine'=> $member->is_genuine
