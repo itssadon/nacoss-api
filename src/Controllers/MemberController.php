@@ -176,6 +176,62 @@ class MemberController extends Controller {
     }
   }
 
+  public function updateMemberDetails(Request $request, Response $response, $args) {
+    $endpoint = $this->getPath($request);
+    $mrn = $args['mrn'];
+    $params = $request->getParsedBody();
+    $this->requiredParams = [
+      'surname',
+      'firstname',
+      'email',
+      'phone',
+      'gender_id',
+      'date_of_birth'
+    ];
+
+    if (is_null($mrn) || empty($mrn)) {
+      $parametersErrorPayload = $this->getParametersErrorPayload($endpoint);
+      return $response->withJson($parametersErrorPayload, 401);
+    }
+
+    $userExists = Member::where('mrn', $mrn)->exists();
+    if (!$userExists) {
+      $customErrorPayload = $this->getCustomErrorPayload($endpoint, 'Member does not exist.', 422, 'Member with MRN does not exist!');
+			return $response->withJson($customErrorPayload, $customErrorPayload['code']);
+    }
+
+    if ($this->hasMissingRequiredParams($params)) {
+      $parametersErrorPayload = $this->getParametersErrorPayload($endpoint);
+      return $response->withJson($parametersErrorPayload, 401);
+    }
+
+    $signUpRules = $this->getRulesForSignUp();
+
+		$validator = $this->getValidator($request, $signUpRules);
+		if (!$validator->isValid()) {
+			$customErrorPayload = $this->getCustomErrorPayload($endpoint, 'Invalid parameter(s).', 422, 'Some parameters provided are invalid.');
+			return $response->withJson($customErrorPayload, $customErrorPayload['code']);
+    }
+    
+    try {
+      $memberProfile = Profile::find($mrn);
+      $memberProfile->surname = ($params['surname']) ? $params['surname'] : $memberProfile->surname;
+      $memberProfile->firstname = ($params['firstname']) ? $params['firstname'] : $memberProfile->firstname;
+      $memberProfile->othername = ($params['othername']) ? $params['othername'] : $memberProfile->othername;
+      $memberProfile->gender_id = ($params['gender_id']) ? $params['gender_id'] : $memberProfile->gender_id;
+      $memberProfile->phone = ($params['phone']) ? $params['phone'] : $memberProfile->phone;
+      $memberProfile->date_of_birth = ($params['date_of_birth']) ? $params['date_of_birth'] : $memberProfile->date_of_birth;
+      $memberProfile->update();
+
+      $memberPayload = $memberProfile->fresh()->getPayload();
+
+      return $response->withJson(['status'=> true, 'message'=> 'Update was successful', "memberDetails"=> $memberPayload], 200);
+    } catch(QueryException $dbException) {
+      $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
+      return $response->withJson($databaseErrorPayload, 500);
+    }
+  }
+
   private function getRulesForSignUp() {
 		return [
 			'school_alias' => Rule::stringType()->length(1, null),
