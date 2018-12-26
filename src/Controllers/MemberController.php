@@ -8,6 +8,7 @@ use NACOSS\Models\ChapterDue;
 use NACOSS\Models\Member;
 use NACOSS\Models\Profile;
 use NACOSS\Models\User;
+use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\QueryException;
 use Respect\Validation\Validator as Rule;
 use Slim\Container;
