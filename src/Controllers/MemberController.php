@@ -236,6 +236,62 @@ class MemberController extends Controller {
     }
   }
 
+  public function populateMemberSchoolAlias(Request $request, Response $response) {
+    $endpoint = $this->getPath($request);
+
+    if (!is_null($request->getQueryParam('start')) && !is_null($request->getQueryParam('page-size'))) {
+			$skip = $request->getQueryParam('start');
+			$page_size = $request->getQueryParam('page-size');
+		}
+
+    try {
+      $members = Member::select(['members.mrn', 'oldUsers.school'])
+        ->leftJoin('nacossor_national.users as oldUsers', function($join) {
+          $join->on('members.mrn', '=', 'oldUsers.nacoss_id');
+        })
+        ->orderBy('oldUsers.school', ASC)
+        ->get();
+
+      $membersPayload = [];
+      foreach ($members as $member) {
+        if ($member['school'] === 'MODIBBOADAMAUNIVERSITYOFTECHNOLOGY') {
+          $member['school'] = 'MAUTECH';
+        } else if ($member['school'] === 'NASARRAWASTATEPOLYTECHNIC') {
+          $member['school'] = 'NASPOLY';
+        } else if ($member['school'] === 'GOMBEUNI' || $member['school'] === 'GOMBESTATEUNIVERSITY,TUDUNWADA') {
+          $member['school'] = 'GSU';
+        } else if ($member['school'] === 'FUOE') {
+          $member['school'] = 'FUOyE';
+        } else if ($member['school'] === 'KASTUNI') {
+          $member['school'] = 'KASUT';
+        } else if ($member['school'] === 'NACOSSFUO') {
+          $member['school'] = 'FUO';
+        } else if ($member['school'] === 'TARABASTATEUNIVERSITY') {
+          $member['school'] = 'TSP';
+        } else if ($member['school'] === 'UNIVERSITYOFMAIDUGURI') {
+          $member['school'] = 'UNIMAID';
+        } else if ($member['school'] === 'Adsu') {
+          $member['school'] = 'ADSU';
+        }
+        
+        $updatedMember = Member::where('mrn', $member['mrn'])->update(['school_alias'=> $member['school']]);
+        array_push($membersPayload, $member);
+      }
+
+      return $response->withJson(["action"=> $membersPayload], 200);
+
+      $membersPayload = [];
+      foreach ($members as $member) {
+        array_push($membersPayload, $member->getFullPayload($member));
+      }
+
+      return $response->withJson(["members"=> $membersPayload], 200);
+    } catch (QueryException $dbException) {
+      $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
+      return $response->withJson($databaseErrorPayload, 500);
+    }
+  }
+
   private function getRulesForSignUp() {
 		return [
 			'school_alias' => Rule::stringType()->length(1, null),
