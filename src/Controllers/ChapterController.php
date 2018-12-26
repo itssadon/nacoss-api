@@ -181,7 +181,7 @@ class ChapterController extends Controller {
 
       $chaptersPayload = [];
       foreach ($chapters as $chapter) {
-        array_push($chaptersPayload, $chapter->getPayload());
+        array_push($chaptersPayload, $chapter->getPayload($chapter));
       }
 
       return $response->withJson(["activeChapters"=> $chaptersPayload], 200);
