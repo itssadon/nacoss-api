@@ -119,11 +119,15 @@ class ChapterController extends Controller {
     $endpoint = $this->getPath($request);
 
     try {
-      $chapters = Chapter::orderBy('school_name', ASC)->get();
+      $chapters = Chapter::leftJoin('zones', function($join) {
+          $join->on('chapters.zone_id', '=', 'zones.zone_id');
+        })
+        ->orderBy('chapters.school_name', ASC)
+        ->get();
 
       $chapterPayload = [];
       foreach ($chapters as $chapter) {
-        array_push($chapterPayload, $chapter->getPayload());
+        array_push($chapterPayload, $chapter->getPayload($chapter));
       }
 
       return $response->withJson(["chapters"=> $chapterPayload], 200);
@@ -174,6 +178,9 @@ class ChapterController extends Controller {
     try {
       $chapters = Chapter::leftJoin('chapter_dues', function($join) {
         $join->on('chapters.chapter_name', '=', 'chapter_dues.chapter_name');
+      })
+      ->leftJoin('zones', function($join) {
+        $join->on('chapters.zone_id', '=', 'zones.zone_id');
       })
       ->whereNotNull('chapter_dues.transaction_ref')
       ->orderBy('chapter_dues.created_at', DESC)
