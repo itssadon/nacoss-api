@@ -115,7 +115,10 @@ class MemberController extends Controller {
         'member'=> $member
       ];
 
-      return $response->withJson(['status'=> true, 'message'=> 'Your membership registration was successful', "memberDetails"=> $memberPayload], 200);
+      return $response->withJson(['status'=> true, 'message'=> 'Your membership registration was successful', "memberDetails"=> $memberPayload])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(200);
+
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
@@ -148,7 +151,10 @@ class MemberController extends Controller {
         array_push($membersPayload, $member->getFullPayload($member));
       }
 
-      return $response->withJson(["members"=> $membersPayload], 200);
+      return $response->withJson(["members"=> $membersPayload])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(200);
+
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
@@ -172,7 +178,10 @@ class MemberController extends Controller {
 
       $memberPayload = Member::getFullPayload($memberDetails);
 
-      return $response->withJson(["memberDetails"=> $memberPayload], 200);
+      return $response->withJson(["memberDetails"=> $memberPayload])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(200);
+
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
@@ -228,7 +237,10 @@ class MemberController extends Controller {
 
       $memberPayload = $memberProfile->fresh()->getPayload();
 
-      return $response->withJson(['status'=> true, 'message'=> 'Update was successful', "memberDetails"=> $memberPayload], 200);
+      return $response->withJson(['status'=> true, 'message'=> 'Update was successful', "memberDetails"=> $memberPayload])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(200);
+
     } catch(QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
@@ -277,14 +289,10 @@ class MemberController extends Controller {
         array_push($membersPayload, $member);
       }
 
-      return $response->withJson(["action"=> $membersPayload], 200);
+      return $response->withJson(["action"=> $membersPayload])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(200);
 
-      $membersPayload = [];
-      foreach ($members as $member) {
-        array_push($membersPayload, $member->getFullPayload($member));
-      }
-
-      return $response->withJson(["members"=> $membersPayload], 200);
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);

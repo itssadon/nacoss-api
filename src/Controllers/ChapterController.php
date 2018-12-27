@@ -36,7 +36,9 @@ class ChapterController extends Controller {
 
     $chapterExists = Chapter::where('chapter_name', $params['chapter_name'])->exists();
     if ($chapterExists) {
-      return $response->withJson(['status'=> false, 'message'=> 'Chapter to be registered already exists!'], 200);
+      return $response->withJson(['status'=> false, 'message'=> 'Chapter to be registered already exists!'])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(402);;
     }
 
     try {
@@ -49,7 +51,10 @@ class ChapterController extends Controller {
       $chapterRegistration = new ChapterRegistration($params);
       $chapterRegistration->save();
 
-      return $response->withJson(["status"=> true, 'message'=> 'Your chapter registration has been logged. Proceed to payment.'], 200);
+      return $response->withJson(["status"=> true, 'message'=> 'Your chapter registration has been logged. Proceed to payment.'])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(200);
+
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
@@ -78,17 +83,23 @@ class ChapterController extends Controller {
 
     $chapterExists = Chapter::where('chapter_name', $params['chapter_name'])->exists();
     if ($chapterExists) {
-      return $response->withJson(['status'=> false, 'message'=> 'Chapter already exists!'], 200);
+      return $response->withJson(['status'=> false, 'message'=> 'Chapter already exists!'])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(402);
     }
 
     $chapterRegExists = ChapterRegistration::where(['chapter_name'=> $params['chapter_name'], 'transaction_ref'=> $params['transaction_ref']])->exists();
     if (!$chapterRegExists) {
-      return $response->withJson(['status'=> false, 'message'=> 'Chapter registration has not been logged.'], 200);
+      return $response->withJson(['status'=> false, 'message'=> 'Chapter registration has not been logged.'])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(402);
     }
 
     $chapterPaymentExists = Transaction::where(['transaction_ref'=> $params['transaction_ref'], 'response_code'=> '00', 'purpose_id'=> 'chapter_reg'])->exists();
     if (!$chapterPaymentExists) {
-      return $response->withJson(['status'=> false, 'message'=> 'Chapter to be registered has not paid required registration fee.'], 200);
+      return $response->withJson(['status'=> false, 'message'=> 'Chapter to be registered has not paid required registration fee.'])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(402);
     }
 
     try {
@@ -108,7 +119,10 @@ class ChapterController extends Controller {
 
       $chapterPayload = $chapter->fresh()->getPayload();
 
-      return $response->withJson(['status'=> true, 'message'=> 'Your chapter registration has completed. Proceed to activate your chapter.', "chapter"=> $chapterPayload], 200);
+      return $response->withJson(['status'=> true, 'message'=> 'Your chapter registration has completed. Proceed to activate your chapter.', "chapter"=> $chapterPayload])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(200);
+
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
@@ -130,7 +144,10 @@ class ChapterController extends Controller {
         array_push($chapterPayload, $chapter->getPayload($chapter));
       }
 
-      return $response->withJson(["chapters"=> $chapterPayload], 200);
+      return $response->withJson(["chapters"=> $chapterPayload])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(200);
+
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
@@ -165,7 +182,10 @@ class ChapterController extends Controller {
         array_push($chaptersPayload, $chapter->getPayload($chapter));
       }
 
-      return $response->withJson(["chapters"=> $chaptersPayload], 200);
+      return $response->withJson(["chapters"=> $chaptersPayload])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(200);
+
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
@@ -191,7 +211,10 @@ class ChapterController extends Controller {
         array_push($chaptersPayload, $chapter->getPayload($chapter));
       }
 
-      return $response->withJson(["activeChapters"=> $chaptersPayload], 200);
+      return $response->withJson(["activeChapters"=> $chaptersPayload])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(200);
+
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
@@ -213,18 +236,25 @@ class ChapterController extends Controller {
 
     $chapterExists = Chapter::where('chapter_name', $params['chapter_name'])->exists();
     if (!$chapterExists) {
-      return $response->withJson(['status'=> false, 'message'=> 'Chapter to be activated was not found!'], 200);
+      return $response->withJson(['status'=> false, 'message'=> 'Chapter to be activated was not found!'])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(402);
     }
 
     $chapterPaymentExists = Transaction::where(['transaction_ref'=> $params['transaction_ref'], 'response_code'=> '00', 'purpose_id'=> 'chapter_dues'])->exists();
     if (!$chapterPaymentExists) {
-      return $response->withJson(['status'=> false, 'message'=> 'Chapter to be activated has not paid required annual due!'], 200);
+      return $response->withJson(['status'=> false, 'message'=> 'Chapter to be activated has not paid required annual due!'])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(402);
     }
 
     try {
       $chapterDues = ChapterDue::updateOrCreate(array('chapter_name'=> $params['chapter_name']), $params);
 
-      return $response->withJson(["status"=> true, 'message'=> 'Your chapter activation was successful'], 200);
+      return $response->withJson(["status"=> true, 'message'=> 'Your chapter activation was successful'])
+        ->withHeader('Content-type', 'application/json')
+        ->withStatus(200);
+        
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
