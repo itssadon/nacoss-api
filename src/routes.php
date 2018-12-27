@@ -14,6 +14,9 @@ $app->get('/[{name}]', function (Request $request, Response $response, array $ar
 });
 
 $app->group('/v1', function () {
+    $this->group('/lookups', function () {
+        require 'Routes/Lookups.php';
+    });
 
     $this->group('/chapters', function () {
         require 'Routes/Chapters.php';
