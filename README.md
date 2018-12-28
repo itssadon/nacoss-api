@@ -1,27 +1,15 @@
-# Slim Framework 3 Skeleton Application
+# NACOSS API built with Slim Framework 3
+https://api.nacoss.org.ng
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application. This application uses the latest Slim 3 with the PHP-View template renderer. It also uses the Monolog logger.
+## History
+The Nigerian Association of Computer Science Students (NACOSS) is a student professional body with presence in almost all tertiary institutions in Nigeria (both private and government owned).
 
-This skeleton application was built for Composer. This makes setting up a new Slim Framework application quick and easy.
+NACOSS was founded by groups of students in July 1993 with the backing of Nigerian Computer Society (NCS) as its parent body. It provides avenues for students (in any IT related field) to highlight and champion issues of interest in a coordinated and organized manner.
 
-## Install the Application
+NACOSS members (NACOSSites) are students studying in tertiary institutions in computer related disciplines including: Computer Science, Computer Engineering, Information Technology, etc.
 
-Run this command from the directory in which you want to install your new Slim Framework application.
+Each member is essentially a member of the Association’s local chapter in his or her institution. As of April 2012, NACOSS states that it is the largest and most organized student body in West Africa, with registered members of about Two Hundred and Fifty thousand (250 000) in well over One Hundred and fifty local chapters (and more unregistered) in different Institutions (Universities, Polytechnics and Colleges of Education) across the six (6) Geo-political zones of Nigeria.
 
-    php composer.phar create-project slim/slim-skeleton [my-app-name]
+## Docummentation
 
-Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
 
-* Point your virtual host document root to your new application's `public/` directory.
-* Ensure `logs/` is web writeable.
-
-To run the application in development, you can run these commands 
-
-	cd [my-app-name]
-	php composer.phar start
-
-Run this command in the application directory to run the test suite
-
-	php composer.phar test
-
-That's it! Now go build something cool.
