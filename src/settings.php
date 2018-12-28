@@ -5,7 +5,6 @@ return [
   'settings' => [
     'displayErrorDetails' => true, // Set to false in production
     'addContentLengthHeader' => false, // Allow the web server to send the content-length header
-    "determineRouteBeforeAppMiddleware" => true, // This Slim setting is required for the middleware to work
 
     // Renderer settings
     'renderer' => [
