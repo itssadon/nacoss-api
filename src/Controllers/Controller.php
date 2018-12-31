@@ -69,12 +69,7 @@ class Controller {
 	}
 
 	protected function getValidator(Request $request, $rules) {
-		return $this->container->validator->validate($request, $rules,
-			[
-				'length' => 'This field must have a length between {{minValue}} and {{maxValue}} characters',
-				'positive' => 'This field must be positive',
-			]
-		);
+		return $this->container->validator->validate($request, $rules, null);
 	}
 
 	protected function getPath(Request $request) {

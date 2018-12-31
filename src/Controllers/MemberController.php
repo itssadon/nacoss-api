@@ -2,6 +2,7 @@
 namespace NACOSS\Controllers;
 
 use NACOSS\Controllers\Controller;
+use NACOSS\Controllers\Messaging\MessageController;
 use NACOSS\Helpers\UniqueIdHelper;
 use NACOSS\Models\Chapter;
 use NACOSS\Models\ChapterDue;
@@ -309,7 +310,7 @@ class MemberController extends Controller {
 			'email' => Rule::email(),
 			'password' => Rule::stringType()->length(6, null),
       'phone' => Rule::stringType()->length(11, 11),
-      'gender_id' => Rule::stringType()->lenght(1, 1)
+      'gender_id' => Rule::stringType()->length(1, 1)
 		];
 	}
 

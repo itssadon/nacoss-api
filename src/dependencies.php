@@ -41,7 +41,7 @@ $container['capsule'] = function ($container) {
 
 // validator
 $container['validator'] = function () {
-	return new Validator(false);
+	return new Validator();
 };
 
 // copyright year
