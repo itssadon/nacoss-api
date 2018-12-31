@@ -5,6 +5,8 @@ return [
   'settings' => [
     'displayErrorDetails' => true, // Set to false in production
     'addContentLengthHeader' => false, // Allow the web server to send the content-length header
+    'address' => 'Moses Oisakede Secretariat, Abubakar Tafawa Balewa University, Bauchi - Nigeria',
+    'president' => '<i>Comr. Amb. Abubakar Sadiq Hassan (SMNCS, SMACM)</i>',
 
     // Renderer settings
     'renderer' => [
