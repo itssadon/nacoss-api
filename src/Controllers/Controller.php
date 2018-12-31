@@ -100,4 +100,12 @@ class Controller {
 		return $this->container->copyrightYear;
 	}
 
+	protected function getAddress() {
+		return $this->container->settings['address'];
+	}
+
+	protected function getPresident() {
+		return $this->container->settings['president'];
+	}
+
 }
