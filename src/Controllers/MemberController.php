@@ -82,13 +82,15 @@ class MemberController extends Controller {
       $user->save();
 
       $messageType = "welcome_email";
+      $president = $this->getPresident();
 			$vars = [
 				'surname' => $profile->surname,
 				'firstname' => $profile->firstname,
 				'mrn' => $user->mrn,
         'email' => $user->email,
-        'password' => $params['password'],
-				'copyright_year' => $this->getCopyrightYear()
+        'copyright_year' => $this->getCopyrightYear(),
+        'message' => "<p>Welcome to the Nigeria Association of Computer Science Students! We are delighted that you have joined us and trust that the benefits of membership will meet your expectations. We have entered your membership for the this calendar year.</p><p>As a member you are required to join our slack workspace http://join-slack.nacoss.org.ng to follow and contribute to discussions. We will send occasional mailings as well, miscellaneous announcements, and registration forms for the National, Zonal, State and Chapter Events.</p><p>Our officers are receptive to new ideas. This year's president, $president, and any of the council members, will be happy to hear from you. Don't hesitate to write!</p>",
+				'address' => $this->getAddress(),
 			];
 
 			try {
