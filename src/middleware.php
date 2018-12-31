@@ -3,6 +3,7 @@
 
 // e.g: $app->add(new \Slim\Csrf\Guard);
 
+/*
 // This middleware will add the Access-Control-Allow-Methods header to every request
 $app->add(function($request, $response, $next) {
   $route = $request->getAttribute("route");
@@ -26,3 +27,4 @@ $app->add(function($request, $response, $next) {
 
   return $response->withHeader("Access-Control-Allow-Methods", implode(",", $methods));
 });
+*/
