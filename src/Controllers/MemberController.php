@@ -118,8 +118,8 @@ class MemberController extends Controller {
         'member'=> $member
       ];
 
-      return $response->withJson(['status'=> true, 'message'=> 'Your membership registration was successful', "memberDetails"=> $memberPayload])
-        ->withHeader('Content-type', 'application/json')
+      return $response->withHeader('Access-Control-Allow-Origin', "*")
+        ->withJson(['status'=> true, 'message'=> 'Your membership registration was successful', "memberDetails"=> $memberPayload])
         ->withStatus(200);
 
     } catch (QueryException $dbException) {
@@ -155,7 +155,7 @@ class MemberController extends Controller {
       }
 
       return $response->withJson(["members"=> $membersPayload])
-        ->withHeader('Content-type', 'application/json')
+        ->withHeader('Access-Control-Allow-Origin', "*")
         ->withStatus(200);
 
     } catch (QueryException $dbException) {
@@ -182,7 +182,7 @@ class MemberController extends Controller {
       $memberPayload = Member::getFullPayload($memberDetails);
 
       return $response->withJson(["memberDetails"=> $memberPayload])
-        ->withHeader('Content-type', 'application/json')
+        ->withHeader('Access-Control-Allow-Origin', "*")
         ->withStatus(200);
 
     } catch (QueryException $dbException) {
@@ -241,7 +241,7 @@ class MemberController extends Controller {
       $memberPayload = $memberProfile->fresh()->getPayload();
 
       return $response->withJson(['status'=> true, 'message'=> 'Update was successful', "memberDetails"=> $memberPayload])
-        ->withHeader('Content-type', 'application/json')
+        ->withHeader('Access-Control-Allow-Origin', "*")
         ->withStatus(200);
 
     } catch(QueryException $dbException) {
@@ -293,7 +293,7 @@ class MemberController extends Controller {
       }
 
       return $response->withJson(["action"=> $membersPayload])
-        ->withHeader('Content-type', 'application/json')
+        ->withHeader('Access-Control-Allow-Origin', "*")
         ->withStatus(200);
 
     } catch (QueryException $dbException) {

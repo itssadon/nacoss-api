@@ -50,7 +50,7 @@ class TransactionController extends Controller {
       $transactionPayload = $transaction->fresh()->getPayload();
 
       return $response->withJson(['status'=> true, 'message'=> 'Transaction logged successfully!', "transaction"=> $transactionPayload])
-        ->withHeader('Content-type', 'application/json')
+        ->withHeader('Access-Control-Allow-Origin', "*")
         ->withStatus(200);
 
     } catch (QueryException $dbException) {
@@ -71,7 +71,7 @@ class TransactionController extends Controller {
       }
 
       return $response->withJson(["transactions"=> $trasactionPayload])
-        ->withHeader('Content-type', 'application/json')
+        ->withHeader('Access-Control-Allow-Origin', "*")
         ->withStatus(200);
         
     } catch (QueryException $dbException) {
