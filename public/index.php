@@ -35,18 +35,6 @@ require 'src/dependencies.php';
 // Register middleware
 require 'src/middleware.php';
 
-// CORS
-$app->options('/{routes:.+}', function ($request, $response, $args) {
-    return $response;
-});
-
-$app->add(function ($request, $response, $next) {
-    $response = $next($request, $response);
-    return $response
-        ->withHeader('Access-Control-Allow-Origin', '*')
-        ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization');
-});
-
 // Register routes
 require 'src/routes.php';
 

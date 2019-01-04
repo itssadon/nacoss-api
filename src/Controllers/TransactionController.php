@@ -49,9 +49,7 @@ class TransactionController extends Controller {
 
       $transactionPayload = $transaction->fresh()->getPayload();
 
-      return $response->withJson(['status'=> true, 'message'=> 'Transaction logged successfully!', "transaction"=> $transactionPayload])
-        ->withHeader('Content-type', 'application/json')
-        ->withStatus(200);
+      return $response->withJson(['status'=> true, 'message'=> 'Transaction logged successfully!', "transaction"=> $transactionPayload])->withStatus(200);
 
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
@@ -70,9 +68,7 @@ class TransactionController extends Controller {
         array_push($trasactionPayload, $chapter->getPayload());
       }
 
-      return $response->withJson(["transactions"=> $trasactionPayload])
-        ->withHeader('Content-type', 'application/json')
-        ->withStatus(200);
+      return $response->withJson(["transactions"=> $trasactionPayload])->withStatus(200);
         
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);

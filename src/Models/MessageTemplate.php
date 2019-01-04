@@ -10,7 +10,7 @@ class MessageTemplate extends Model
    *
    * @var string
    */
-  protected $table = 'message_template';
+  protected $table = 'message_templates';
 
   /**
    * Turn off the created_at & updated_at columns

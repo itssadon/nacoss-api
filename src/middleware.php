@@ -1,28 +1,15 @@
 <?php
 // Application middleware
+use RKA\Middleware\IpAddress;
 
 // e.g: $app->add(new \Slim\Csrf\Guard);
 
-// This middleware will add the Access-Control-Allow-Methods header to every request
-$app->add(function($request, $response, $next) {
-  $route = $request->getAttribute("route");
+// Middleware to add Access-Control-Allow-Origin and Access-Control-Allow-Methods to response readers
+$app->add(new \Eko3alpha\Slim\Middleware\CorsMiddleware([
+  '*' => ['GET', 'POST', 'PUT']
+]));
 
-  $methods = [];
-
-  if (!empty($route)) {
-    $pattern = $route->getPattern();
-
-    foreach ($this->router->getRoutes() as $route) {
-      if ($pattern === $route->getPattern()) {
-        $methods = array_merge_recursive($methods, $route->getMethods());
-      }
-    }
-    // Methods holds all of the HTTP Verbs that a particular route handles.
-  } else {
-    $methods[] = $request->getMethod();
-  }
-
-  $response = $next($request, $response);
-
-  return $response->withHeader("Access-Control-Allow-Methods", implode(",", $methods));
-});
+// Middleware to Retrieving IP address
+$checkProxyHeaders = true;
+$trustedProxies = ['10.0.0.1', '10.0.0.2'];
+$app->add(new IpAddress($checkProxyHeaders, $trustedProxies));

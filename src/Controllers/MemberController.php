@@ -2,6 +2,7 @@
 namespace NACOSS\Controllers;
 
 use NACOSS\Controllers\Controller;
+use NACOSS\Controllers\Messaging\MessageController;
 use NACOSS\Helpers\UniqueIdHelper;
 use NACOSS\Models\Chapter;
 use NACOSS\Models\ChapterDue;
@@ -82,13 +83,15 @@ class MemberController extends Controller {
       $user->save();
 
       $messageType = "welcome_email";
+      $president = $this->getPresident();
 			$vars = [
 				'surname' => $profile->surname,
 				'firstname' => $profile->firstname,
 				'mrn' => $user->mrn,
         'email' => $user->email,
-        'password' => $params['password'],
-				'copyright_year' => $this->getCopyrightYear()
+        'copyright_year' => $this->getCopyrightYear(),
+        'message' => "<p>Welcome to the Nigeria Association of Computer Science Students! We are delighted that you have joined us and trust that the benefits of membership will meet your expectations. We have entered your membership for the this calendar year.</p><p>As a member you are required to join our slack workspace <a href='http://join-slack.nacoss.org.ng'>here</a> to follow and contribute to discussions, follow us on Twitter <a href='https://twitter.com/nacoss_national'>here</a> and Like our page on Facebook <a href='https://facebook.com/nacossnational'>here</a>. We will send you SMS noitifications from time to time, occasional mailings as well, miscellaneous announcements, and registration forms for National, Zonal, State and Chapter Events.</p><p>Our officers are receptive to new ideas. This year's president, $president, and any of the council members, will be happy to hear from you. Don't hesitate to write!</p>",
+				'address' => $this->getAddress(),
 			];
 
 			try {
@@ -115,9 +118,7 @@ class MemberController extends Controller {
         'member'=> $member
       ];
 
-      return $response->withJson(['status'=> true, 'message'=> 'Your membership registration was successful', "memberDetails"=> $memberPayload])
-        ->withHeader('Content-type', 'application/json')
-        ->withStatus(200);
+      return $response->withJson(['status'=> true, 'message'=> 'Your membership registration was successful', "memberDetails"=> $memberPayload])->withStatus(200);
 
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
@@ -151,9 +152,7 @@ class MemberController extends Controller {
         array_push($membersPayload, $member->getFullPayload($member));
       }
 
-      return $response->withJson(["members"=> $membersPayload])
-        ->withHeader('Content-type', 'application/json')
-        ->withStatus(200);
+      return $response->withJson(["members"=> $membersPayload])->withStatus(200);
 
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
@@ -178,9 +177,7 @@ class MemberController extends Controller {
 
       $memberPayload = Member::getFullPayload($memberDetails);
 
-      return $response->withJson(["memberDetails"=> $memberPayload])
-        ->withHeader('Content-type', 'application/json')
-        ->withStatus(200);
+      return $response->withJson(["memberDetails"=> $memberPayload])->withStatus(200);
 
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
@@ -237,9 +234,7 @@ class MemberController extends Controller {
 
       $memberPayload = $memberProfile->fresh()->getPayload();
 
-      return $response->withJson(['status'=> true, 'message'=> 'Update was successful', "memberDetails"=> $memberPayload])
-        ->withHeader('Content-type', 'application/json')
-        ->withStatus(200);
+      return $response->withJson(['status'=> true, 'message'=> 'Update was successful', "memberDetails"=> $memberPayload])->withStatus(200);
 
     } catch(QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
@@ -289,9 +284,7 @@ class MemberController extends Controller {
         array_push($membersPayload, $member);
       }
 
-      return $response->withJson(["action"=> $membersPayload])
-        ->withHeader('Content-type', 'application/json')
-        ->withStatus(200);
+      return $response->withJson(["action"=> $membersPayload])->withStatus(200);
 
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
@@ -307,7 +300,7 @@ class MemberController extends Controller {
 			'email' => Rule::email(),
 			'password' => Rule::stringType()->length(6, null),
       'phone' => Rule::stringType()->length(11, 11),
-      'gender_id' => Rule::stringType()->lenght(1, 1)
+      'gender_id' => Rule::stringType()->length(1, 1)
 		];
 	}
 
