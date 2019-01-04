@@ -118,9 +118,7 @@ class MemberController extends Controller {
         'member'=> $member
       ];
 
-      return $response->withHeader('Access-Control-Allow-Origin', "*")
-        ->withJson(['status'=> true, 'message'=> 'Your membership registration was successful', "memberDetails"=> $memberPayload])
-        ->withStatus(200);
+      return $response->withJson(['status'=> true, 'message'=> 'Your membership registration was successful', "memberDetails"=> $memberPayload])->withStatus(200);
 
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
@@ -154,9 +152,7 @@ class MemberController extends Controller {
         array_push($membersPayload, $member->getFullPayload($member));
       }
 
-      return $response->withJson(["members"=> $membersPayload])
-        ->withHeader('Access-Control-Allow-Origin', "*")
-        ->withStatus(200);
+      return $response->withJson(["members"=> $membersPayload])->withStatus(200);
 
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
@@ -181,9 +177,7 @@ class MemberController extends Controller {
 
       $memberPayload = Member::getFullPayload($memberDetails);
 
-      return $response->withJson(["memberDetails"=> $memberPayload])
-        ->withHeader('Access-Control-Allow-Origin', "*")
-        ->withStatus(200);
+      return $response->withJson(["memberDetails"=> $memberPayload])->withStatus(200);
 
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
@@ -240,9 +234,7 @@ class MemberController extends Controller {
 
       $memberPayload = $memberProfile->fresh()->getPayload();
 
-      return $response->withJson(['status'=> true, 'message'=> 'Update was successful', "memberDetails"=> $memberPayload])
-        ->withHeader('Access-Control-Allow-Origin', "*")
-        ->withStatus(200);
+      return $response->withJson(['status'=> true, 'message'=> 'Update was successful', "memberDetails"=> $memberPayload])->withStatus(200);
 
     } catch(QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
@@ -292,9 +284,7 @@ class MemberController extends Controller {
         array_push($membersPayload, $member);
       }
 
-      return $response->withJson(["action"=> $membersPayload])
-        ->withHeader('Access-Control-Allow-Origin', "*")
-        ->withStatus(200);
+      return $response->withJson(["action"=> $membersPayload])->withStatus(200);
 
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);

@@ -2,31 +2,31 @@
 namespace NACOSS\Controllers\Lookups;
 
 use NACOSS\Controllers\Controller;
-use NACOSS\Models\Gender;
+use NACOSS\Models\Zone;
 use Illuminate\Database\QueryException;
 use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class GenderController extends Controller {
+class ZoneController extends Controller {
   protected $requiredParams = [];
 
   public function __construct(Container $container) {
     parent::__construct($container);
   }
 
-  public function getAllGender(Request $request, Response $response) {
+  public function getAllZones(Request $request, Response $response) {
     $endpoint = $this->getPath($request);
 
     try {
-      $allGender = Gender::orderBy('gender_id', ASC)->get();
+      $allZones = Zone::orderBy('zone_id', ASC)->get();
 
-      $genderPayload = [];
-      foreach ($allGender as $gender) {
-        array_push($genderPayload, $gender->getPayload());
+      $zonePayload = [];
+      foreach ($allZones as $zone) {
+        array_push($zonePayload, $zone->getPayload());
       }
 
-      return $response->withJson(["gender"=> $genderPayload])->withStatus(200);
+      return $response->withJson(["zones"=> $zonePayload])->withStatus(200);
 
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
