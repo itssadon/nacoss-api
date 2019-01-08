@@ -292,6 +292,36 @@ class MemberController extends Controller {
     }
   }
 
+  public function getUncoveredMembers(Request $request, Response $response) {
+    $endpoint = $this->getPath($request);
+
+    try {
+    $members = Member::select('members.*','profiles.*','users.*')
+        ->leftJoin('profiles', function($join) {
+          $join->on('members.mrn', '=', 'profiles.mrn');
+        })
+        ->leftJoin('users', function($join) {
+          $join->on('members.mrn', '=', 'users.mrn');
+        })
+        ->leftJoin('welfare_scheme', function($join) {
+          $join->on('members.mrn', '=', 'welfare_scheme.mrn');
+        })
+        ->whereNull('welfare_scheme.mrn')
+        ->get();
+
+      $membersPayload = [];
+      foreach ($members as $member) {
+        array_push($membersPayload, $member->getFullPayload($member));
+      }
+
+      return $response->withJson(["uncoveredMembers"=> $membersPayload])->withStatus(200);
+
+    } catch (QueryException $dbException) {
+      $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
+      return $response->withJson($databaseErrorPayload, 500);
+    }
+  }
+
   private function getRulesForSignUp() {
 		return [
 			'school_alias' => Rule::stringType()->length(1, null),
