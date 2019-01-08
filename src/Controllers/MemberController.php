@@ -9,6 +9,7 @@ use NACOSS\Models\ChapterDue;
 use NACOSS\Models\Member;
 use NACOSS\Models\Profile;
 use NACOSS\Models\User;
+use NACOSS\Models\WelfareScheme;
 use Illuminate\Database\QueryException;
 use Respect\Validation\Validator as Rule;
 use Slim\Container;
@@ -296,7 +297,7 @@ class MemberController extends Controller {
     $endpoint = $this->getPath($request);
 
     try {
-    $members = Member::select('members.*','profiles.*','users.*')
+      $members = Member::select('members.*','profiles.*','users.*')
         ->leftJoin('profiles', function($join) {
           $join->on('members.mrn', '=', 'profiles.mrn');
         })
@@ -317,6 +318,33 @@ class MemberController extends Controller {
       return $response->withJson(["uncoveredMembers"=> $membersPayload])->withStatus(200);
 
     } catch (QueryException $dbException) {
+      $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
+      return $response->withJson($databaseErrorPayload, 500);
+    }
+  }
+
+  public function insureMember(Request $request, Response $response) {
+    $endpoint = $this->getPath($request);
+    $params = $request->getParsedBody();
+    $this->requiredParams = [
+      'mrn',
+      'cover_year',
+      'beneficiary_name',
+      'beneficiary_phone'
+    ];
+
+    if ($this->hasMissingRequiredParams($params)) {
+      $parametersErrorPayload = $this->getParametersErrorPayload($endpoint);
+      return $response->withJson($parametersErrorPayload, 401);
+    }
+
+    try {
+      $memberWelfareScheme = new WelfareScheme($params);
+      $memberWelfareScheme->save();
+
+      return $response->withJson(['status'=> true, 'message'=> 'Member Insurance Successful.'])->withStatus(200);
+
+    } catch(QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return $response->withJson($databaseErrorPayload, 500);
     }
