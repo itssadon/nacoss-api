@@ -41,16 +41,10 @@ class ChapterController extends Controller {
     }
 
     try {
-      $transaction = new Transaction();
-      $transaction->transaction_ref = $params['transaction_ref'];
-      $transaction->email = $params['chapter_email'];
-      $transaction->amount = $params['amount'];
-      $transaction->save();
-
       $chapterRegistration = new ChapterRegistration($params);
       $chapterRegistration->save();
 
-      return $response->withJson(["status"=> true, 'message'=> 'Your chapter registration has been logged. Proceed to payment.'])->withStatus(200);
+      return $response->withJson(["status"=> true, 'message'=> 'Your chapter registration has been logged.'])->withStatus(200);
 
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
@@ -185,14 +179,14 @@ class ChapterController extends Controller {
 
     try {
       $chapters = Chapter::leftJoin('chapter_dues', function($join) {
-        $join->on('chapters.chapter_name', '=', 'chapter_dues.chapter_name');
-      })
-      ->leftJoin('zones', function($join) {
-        $join->on('chapters.zone_id', '=', 'zones.zone_id');
-      })
-      ->whereNotNull('chapter_dues.transaction_ref')
-      ->orderBy('chapter_dues.created_at', DESC)
-      ->get();
+          $join->on('chapters.chapter_name', '=', 'chapter_dues.chapter_name');
+        })
+        ->leftJoin('zones', function($join) {
+          $join->on('chapters.zone_id', '=', 'zones.zone_id');
+        })
+        ->whereNotNull('chapter_dues.transaction_ref')
+        ->orderBy('chapter_dues.created_at', DESC)
+        ->get();
 
       $chaptersPayload = [];
       foreach ($chapters as $chapter) {
@@ -200,6 +194,34 @@ class ChapterController extends Controller {
       }
 
       return $response->withJson(["activeChapters"=> $chaptersPayload])->withStatus(200);
+
+    } catch (QueryException $dbException) {
+      $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
+      return $response->withJson($databaseErrorPayload, 500);
+    }
+  }
+
+  public function getInActiveChapters(Request $request, Response $response) {
+    $endpoint = $this->getPath($request);
+
+    try {
+      $chapters = Chapter::select('chapters.school_alias', 'chapters.school_name', 'chapters.chapter_name', 'chapters.chapter_reg_num', 'zones.zone_name', 'chapters.chapter_email', 'chapters.address', 'chapters.hod_name', 'chapters.hod_phone')
+        ->leftJoin('chapter_dues', function($join) {
+          $join->on('chapters.chapter_name', '=', 'chapter_dues.chapter_name');
+        })
+        ->leftJoin('zones', function($join) {
+          $join->on('chapters.zone_id', '=', 'zones.zone_id');
+        })
+        ->whereNull('chapter_dues.transaction_ref')
+        ->orderBy('chapter_dues.created_at', DESC)
+        ->get();
+
+      $chaptersPayload = [];
+      foreach ($chapters as $chapter) {
+        array_push($chaptersPayload, $chapter->getPayload($chapter));
+      }
+
+      return $response->withJson(["inActiveChapters"=> $chaptersPayload])->withStatus(200);
 
     } catch (QueryException $dbException) {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
