@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class WelfareScheme extends Model {
   protected $table = 'welfare_scheme';
-  public $primaryKey = 'mrn';
+  public $primaryKey = ['mrn', 'cover_year'];
   public $timestamp = false;
   public $incrementing = false;
   protected $fillable = [
