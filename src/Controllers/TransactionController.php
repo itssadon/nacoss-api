@@ -35,9 +35,14 @@ class TransactionController extends Controller {
       $parametersErrorPayload = $this->getParametersErrorPayload($endpoint);
       return $response->withJson($parametersErrorPayload, 401);
     }
+    
+    $amount = TransactionPurpose::select('amount')->where('purpose_id', $params['purpose_id'])->first();
+    if (empty($amount['amount'])) {
+      $parametersErrorPayload = $this->getParametersErrorPayload($endpoint);
+      return $response->withJson($parametersErrorPayload, 401);
+    }
 
     try {
-      $amount = TransactionPurpose::select('amount')->where('purpose_id', $params['purpose_id'])->first();
 
       $transaction = Transaction::updateOrCreate([
         'transaction_ref'=> $params['transaction_ref'],

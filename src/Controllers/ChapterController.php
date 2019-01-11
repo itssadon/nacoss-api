@@ -52,7 +52,7 @@ class ChapterController extends Controller {
     }
   }
 
-  public function updateChapterRegistration(Request $request, Response $response) {
+  public function completeChapterRegistration(Request $request, Response $response) {
     $endpoint = $this->getPath($request);
     $this->requiredParams = [
       'school_alias',

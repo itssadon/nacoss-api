@@ -6,7 +6,7 @@ use RKA\Middleware\IpAddress;
 
 // Middleware to add Access-Control-Allow-Origin and Access-Control-Allow-Methods to response readers
 $app->add(new \Eko3alpha\Slim\Middleware\CorsMiddleware([
-  '*' => ['GET', 'POST', 'PUT']
+  '*' => 'GET', 'POST', 'PUT', 'OPTIONS'
 ]));
 
 // Middleware to Retrieving IP address
