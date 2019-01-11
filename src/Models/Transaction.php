@@ -5,12 +5,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model {
   protected $table = 'transactions';
+  public $primaryKey = 'transaction_ref';
   public $timestamp = false;
-  public $incrementing = true;
+  public $incrementing = false;
   protected $fillable = [
+    'transaction_ref',
     'email',
     'phone',
-    'transaction_ref',
     'amount',
     'response_code',
     'response_message',
@@ -19,9 +20,9 @@ class Transaction extends Model {
 
   public function getPayload() {
     return [
+      'transactionRef' => $this->transaction_ref,
       'email' => $this->email,
       'phone' => $this->phone,
-      'transactionRef' => $this->transaction_ref,
       'amount' => $this->amount,
       'responseCode' => $this->response_code,
       'responseMessage' => $this->response_message

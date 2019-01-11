@@ -37,15 +37,17 @@ class TransactionController extends Controller {
     }
 
     try {
-      $transaction = Transaction::firstOrNew(['transaction_ref'=> $params['transaction_ref']]);
-      $transaction->email = strtolower($params['email']);
-      $transaction->phone = ($params['phone']) ? $params['phone'] : '';
-      $transaction->response_code = $params['response_code'];
-      $transaction->response_message = $params['response_message'];
-      $transaction->purpose_id = $params['purpose_id'];
-      $txPurposeAmount = TransactionPurpose::select('amount')->where('purpose_id', $transaction->purpose_id)->first();
-      $transaction->amount = $txPurposeAmount['amount'];
-      $transaction->save();
+      $amount = TransactionPurpose::select('amount')->where('purpose_id', $params['purpose_id'])->first();
+
+      $transaction = Transaction::updateOrCreate([
+        'transaction_ref'=> $params['transaction_ref'],
+        'email' => strtolower($params['email']),
+        'phone' => ($params['phone']) ? $params['phone'] : '',
+        'response_code' => $params['response_code'],
+        'response_message' => $params['response_message'],
+        'purpose_id' => $params['purpose_id'],
+        'amount' => $amount['amount']
+      ]);
 
       $transactionPayload = $transaction->fresh()->getPayload();
 
