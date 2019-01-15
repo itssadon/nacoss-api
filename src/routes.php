@@ -30,6 +30,9 @@ $app->group('/v1', function () {
         require 'Routes/Transactions.php';
     });
 
+    $this->group('/ussd', function () {
+        require 'Routes/USSD.php';
+    });
 });
 
 // Catch-all route to serve a 404 Not Found page if none of the routes match
