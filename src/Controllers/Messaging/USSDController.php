@@ -31,13 +31,10 @@ class USSDController extends Controller {
         break;
 
       case '1*1':
-        // This is a second level response where the user selected 1 in the first instance
         $responsePayload = "END This feature is still being tested.";
         break;
 
       case '1*2':
-        // This is a second level response where the user selected 1 in the first instance
-        // This is a terminal request. Note how we start the response with END
         $responsePayload = "END This feature is still being tested.";
         break;
 
@@ -50,6 +47,25 @@ class USSDController extends Controller {
           $responsePayload = "END ".$memberProfile['firstname'].", your NACOSS ID (MRN) is: ".$memberProfile['mrn'];
         }
 
+        break;
+
+      case '3':
+        $responsePayload = "CON Kindly rate this service accordingly";
+        $responsePayload .= "0. Terrible \n";
+        $responsePayload .= "1. Average \n";
+        $responsePayload .= "2. Excellent";
+        break;
+
+      case '3*0':
+        $responsePayload = "END Thank you for your honest opinion. We would improve.";
+        break;
+
+      case "3*1":
+        $responsePayload = "END Thank you for your feedback, we will improve on the service.";
+        break;
+
+      case "3*2":
+        $responsePayload = "END Your feedback is hugely appreciated. One NACOSS!";
         break;
       
       default:
@@ -78,5 +94,15 @@ class USSDController extends Controller {
       $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
       return null;
     }
+  }
+
+  private function sendFeedback($phone, $rating) {
+    $vars = [
+      'message' => "NACOSSite with phone number: $phone rated USSD service: $rating!"
+    ];
+
+    $messageTemplate = ['subject'=>'New USSD Rating', 'body'=>'<html><body><p>[{MESSAGE}]</p></body></html>'];
+    json_encode($messageTemplate);
+    $message = new MessageController($messageTemplate->body, $vars);
   }
 }
