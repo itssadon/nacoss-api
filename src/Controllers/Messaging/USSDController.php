@@ -82,6 +82,7 @@ class USSDController extends Controller {
   }
 
   private function getMemberMRN($phone) {
+    $phone = str_replace('+234', '0', $phone);
     try {
       $memberProfile = Profile::where('phone', $phone)->first();
       
