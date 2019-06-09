@@ -27,7 +27,7 @@ class MailController extends PHPMailer
     parent::__construct($exceptions);
 
     chdir(dirname(__DIR__));
-    $settings = require '../../settings.php';
+    $settings = require '../../src/settings.php';
     $app = new App($settings);
     $container = $app->getContainer();
     $config = $container->settings['PHPMailer'];
@@ -40,8 +40,6 @@ class MailController extends PHPMailer
         throw new Exception("Required config not set: " . $missingRequiredConfigStr);               
       }
 
-      //dd($config['port']);
-
       $this->SMTPDebug = $config['SMTPDebug'];
       //$this->isSMTP();
       $this->host = $config['host'];
@@ -50,7 +48,7 @@ class MailController extends PHPMailer
       $this->username = $config['username'];
       $this->password = $config['password'];
       $this->port = $config['port'];
-      $this->setFrom('no-reply@playnetworkafica.com', 'PLAY Network Africa');
+      $this->setFrom($config['username'], $config['full_name']);
       $this->msgHTML($body, __DIR__);
       // Inject a new debug output handler
       $this->Debugoutput = function ($str, $level) {

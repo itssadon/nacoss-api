@@ -2,6 +2,7 @@
 namespace NACOSS\Controllers;
 
 use NACOSS\Controllers\Controller;
+use NACOSS\Controllers\Messaging\MailController;
 use NACOSS\Controllers\Messaging\MessageController;
 use NACOSS\Helpers\UniqueIdHelper;
 use NACOSS\Models\Chapter;
@@ -106,6 +107,14 @@ class MemberController extends Controller {
 				$subject = str_replace('[{FNAME}]', $profile->firstname, $messageTemplate->subject);
 				$message = new MessageController($messageTemplate->body, $vars);
 
+        try {
+          $mail = new MailController(true, $message);
+          $mail->addAddress($user->email, $profile->firstname . ' ' . $profile->surname);
+          $mail->Subject = $subject;
+          $mail->send();
+        } catch (MailerException $mailerException) {
+          $mailerErrorPayload = $mailerException;
+        }
 			} catch (QueryException $dbException) {
 				$databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
 				return $response->withJson($databaseErrorPayload, 500);

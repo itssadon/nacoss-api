@@ -25,6 +25,7 @@ class Profile extends Model {
 
   public function getPayload() {
     return [
+      'mrn' => $this->mrn,
       'surname' => $this->surname,
       'firstname' => $this->firstname,
       'othername' => $this->othername,
