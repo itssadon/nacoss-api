@@ -26,7 +26,7 @@ class UniqueIdHelper {
   public function generateNacossId() {
     $year = substr(date('Y'), 2, 2);
     $nacoss_id = $year.substr(str_shuffle('0123456780ABCDEFGHJKMNPQRSTUVWXYZ'), 0, 8).'NA';
-    while (UniqueIdHelper::dataExists($nacoss_id)) {
+    while ($this->dataExists($nacoss_id)) {
       $nacoss_id = $year.substr(str_shuffle('0123456780ABCDEFGHJKMNPQRSTUVWXYZ'), 0, 8).'NA';
     }
     return $nacoss_id;

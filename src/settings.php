@@ -44,7 +44,7 @@ return [
       'password' => getenv('MAIL_PASSWORD'),
       'SMTPSecure' => getenv('MAIL_SMTPSecure'),
       'port' => getenv('MAIL_PORT'),
-      'full' => 'NACOSS National'
+      'full_name' => getenv('MAIL_NAME')
     ]
   ]
 ];
