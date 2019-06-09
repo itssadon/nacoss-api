@@ -64,7 +64,8 @@ class MemberController extends Controller {
 
     try {
       $member = new Member();
-      $member->mrn = UniqueIdHelper::generateNacossId();
+      $uniqueIdHelper  = new UniqueIdHelper();
+      $member->mrn = $uniqueIdHelper->generateNacossId();
       $member->school_alias = $params['school_alias'];
       $member->save();
 
@@ -88,7 +89,8 @@ class MemberController extends Controller {
       $president = $this->getPresident();
 			$vars = [
 				'surname' => $profile->surname,
-				'firstname' => $profile->firstname,
+        'firstname' => $profile->firstname,
+        'reg_date' => date('d-m-Y'),
 				'mrn' => $user->mrn,
         'email' => $user->email,
         'copyright_year' => $this->getCopyrightYear(),
