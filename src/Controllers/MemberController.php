@@ -82,7 +82,7 @@ class MemberController extends Controller {
       $user = new User;
       $user->mrn = $member->mrn;
       $user->email = strtolower($params['email']);
-      $user->password  = password_hash($params['password'], PASSWORD_BCRYPT, ['cost'=> 10]);
+      $user->password = password_hash($params['password'], PASSWORD_BCRYPT, ['cost'=> 10]);
       $user->save();
 
       $messageType = "welcome_email";
