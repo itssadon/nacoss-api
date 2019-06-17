@@ -361,6 +361,36 @@ class MemberController extends Controller {
     }
   }
 
+  public function searchMember(Request $request, Response $response) {
+    $endpoint = $this->getPath($request);
+    $searchTerm = $request->getQueryParam('term');
+    
+    if (is_null($searchTerm) || empty($searchTerm)) {
+      $parametersErrorPayload = $this->getParametersErrorPayload($endpoint);
+      return $response->withJson($parametersErrorPayload)->withStatus(401);
+    }
+
+    try {
+      $memberDetails = Member::select('members.mrn', 'members.school_alias', 'members.skills', 'members.issued_cert', 'members.is_genuine', 'profiles.surname', 'profiles.firstname', 'profiles.othername', 'profiles.gender_id', 'profiles.phone', 'profiles.date_of_birth', 'profiles.photo', 'profiles.twitter', 'profiles.facebook', 'profiles.linkedin', 'profiles.website', 'users.email')
+        ->where('users.email', 'LIKE', "%{$searchTerm}%")
+        ->orWhere('profiles.phone', 'LIKE', "%{$searchTerm}%")
+        ->leftJoin('profiles', function($join) {
+          $join->on('members.mrn', '=', 'profiles.mrn');
+        })
+        ->leftJoin('users', function($join) {
+          $join->on('members.mrn', '=', 'users.mrn');
+        })
+        ->first();
+
+      $memberPayload = Member::getFullPayload($memberDetails);
+
+      return $response->withJson(["memberDetails"=> $memberPayload])->withStatus(200);
+    } catch (QueryException $dbException) {
+      $databaseErrorPayload = $this->getDatabaseErrorPayload($endpoint, $dbException);
+      return $response->withJson($databaseErrorPayload)->withStatus(500);
+    }
+  }
+
   private function getRulesForSignUp() {
 		return [
 			'school_alias' => Rule::stringType()->length(1, null),
