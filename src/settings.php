@@ -7,7 +7,7 @@ return [
     'addContentLengthHeader' => false, // Allow the web server to send the content-length header
     "determineRouteBeforeAppMiddleware" => true, // This Slim setting is required for the middleware to work
     'address' => 'Moses Oisakede Secretariat, Abubakar Tafawa Balewa University, Bauchi - Nigeria',
-    'president' => '<i>Comr. Amb. Abubakar Sadiq Hassan (SMNCS, SMACM)</i>',
+    'president' => '<i>Comr. (Amb.) Abubakar Sadiq Hassan <small>(SMNCS, SMACM)</small></i>',
 
     // Renderer settings
     'renderer' => [
